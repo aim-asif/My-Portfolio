@@ -8,7 +8,7 @@ export async function GET() {
       message: 'Contents API endpoint ready',
       status: 'success' 
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to fetch contents' },
       { status: 500 }
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       data: body,
       status: 'success' 
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to create content' },
       { status: 500 }

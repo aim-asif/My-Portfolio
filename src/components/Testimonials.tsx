@@ -32,7 +32,7 @@ const Testimonials = () => {
       role: "Founder",
       company: "Creative Studios",
       avatar: "ER",
-      content: "Asif's video editing skills are outstanding. He took our raw footage and created compelling marketing videos that helped us secure major clients. His creative vision and technical expertise are unmatched.",
+      content: "Asif&apos;s video editing skills are outstanding. He took our raw footage and created compelling marketing videos that helped us secure major clients. His creative vision and technical expertise are unmatched.",
       project: "Video Production & Editing"
     },
     {
@@ -81,7 +81,7 @@ const Testimonials = () => {
             What Clients Say
           </h2>
           <p className="text-xl text-neutral-600 dark:text-neutral-300 max-w-3xl mx-auto">
-            Don't just take my word for it. Here's what my clients have to say about working together.
+            Don&apos;t just take my word for it. Here&apos;s what my clients have to say about working together.
           </p>
         </div>
 
@@ -112,7 +112,7 @@ const Testimonials = () => {
 
                   {/* Content */}
                   <blockquote className="text-xl lg:text-2xl text-neutral-700 dark:text-neutral-200 leading-relaxed italic">
-                    "{currentTestimonial.content}"
+                    &quot;{currentTestimonial.content}&quot;
                   </blockquote>
 
                   {/* Author */}

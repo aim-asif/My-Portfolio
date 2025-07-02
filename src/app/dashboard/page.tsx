@@ -10,12 +10,10 @@ import {
   Plus, 
   Edit, 
   Trash2, 
-  Eye, 
   LogOut,
   FileText,
   Image as ImageIcon,
   Video,
-  Calendar,
   Building2,
   Upload,
   Globe,
@@ -29,15 +27,32 @@ import {
   MessageSquare,
   Home
 } from "lucide-react";
+import Image from "next/image";
+
+type Content = {
+  id: number;
+  title: string;
+  content: string;
+  company: string;
+  client: string;
+  category: string;
+  mediaType: string;
+  mediaUrl: string;
+  tags: string[];
+  status: string;
+  date: string;
+  views: number;
+  likes: number;
+};
 
 const DashboardPage = () => {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [contents, setContents] = useState([]);
+  const [contents, setContents] = useState<Content[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingContent, setEditingContent] = useState(null);
+  const [editingContent, setEditingContent] = useState<Content | null>(null);
   const [activeMenu, setActiveMenu] = useState("dashboard");
 
   // Simple authentication (in production, use proper auth)
@@ -69,27 +84,27 @@ const DashboardPage = () => {
     }
   }, []);
 
-  const saveContents = (newContents: any) => {
+  const saveContents = (newContents: Content[]) => {
     setContents(newContents);
     localStorage.setItem("dashboardContents", JSON.stringify(newContents));
   };
 
-  const addContent = (contentData: any) => {
-    const newContent = {
+  const addContent = (contentData: Omit<Content, 'id' | 'date' | 'views' | 'likes'>) => {
+    const newContent: Content = {
       id: Date.now(),
       ...contentData,
       date: new Date().toISOString().split('T')[0],
       views: 0,
       likes: 0,
-      status: contentData.status || 'draft'
+      status: contentData.status || 'draft',
     };
     const updatedContents = [...contents, newContent];
     saveContents(updatedContents);
     setShowAddForm(false);
   };
 
-  const updateContent = (contentData: any) => {
-    const updatedContents = contents.map((c: any) => 
+  const updateContent = (contentData: Content) => {
+    const updatedContents = contents.map((c: Content) => 
       c.id === editingContent?.id ? { ...c, ...contentData } : c
     );
     saveContents(updatedContents);
@@ -99,13 +114,13 @@ const DashboardPage = () => {
 
   const deleteContent = (id: number) => {
     if (confirm("Are you sure you want to delete this content?")) {
-      const updatedContents = contents.filter((content: any) => content.id !== id);
+      const updatedContents = contents.filter((content: Content) => content.id !== id);
       saveContents(updatedContents);
     }
   };
 
   const togglePublishStatus = (id: number) => {
-    const updatedContents = contents.map((content: any) => 
+    const updatedContents = contents.map((content: Content) => 
       content.id === id 
         ? { ...content, status: content.status === 'published' ? 'draft' : 'published' }
         : content
@@ -157,8 +172,8 @@ const DashboardPage = () => {
     );
   }
 
-  const publishedContents = contents.filter((c: any) => c.status === 'published');
-  const draftContents = contents.filter((c: any) => c.status === 'draft');
+  const publishedContents = contents.filter((c: Content) => c.status === 'published');
+  const draftContents = contents.filter((c: Content) => c.status === 'draft');
 
   const sidebarMenus = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -249,7 +264,7 @@ const DashboardPage = () => {
           {showAddForm && (
             <ContentForm
               content={editingContent}
-              onSubmit={(data: any) => {
+              onSubmit={(data: Content) => {
                 if (editingContent) {
                   updateContent(data);
                 } else {
@@ -269,7 +284,7 @@ const DashboardPage = () => {
 };
 
 // Dashboard Content Component
-const DashboardContent = ({ publishedContents, draftContents, contents }: any) => {
+const DashboardContent = ({ publishedContents, draftContents, contents }: { publishedContents: Content[]; draftContents: Content[]; contents: Content[] }) => {
   return (
     <div className="space-y-8">
       <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">Dashboard Overview</h2>
@@ -316,7 +331,7 @@ const DashboardContent = ({ publishedContents, draftContents, contents }: any) =
               <div>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">Companies</p>
                 <p className="text-2xl font-bold">
-                  {new Set(contents.map((c: any) => c.company)).size}
+                  {new Set(contents.map((c: Content) => c.company)).size}
                 </p>
               </div>
             </div>
@@ -333,7 +348,7 @@ const DashboardContent = ({ publishedContents, draftContents, contents }: any) =
           <CardContent>
             {publishedContents.slice(0, 5).length > 0 ? (
               <div className="space-y-3">
-                {publishedContents.slice(0, 5).map((content: any) => (
+                {publishedContents.slice(0, 5).map((content: Content) => (
                   <div key={content.id} className="flex items-center space-x-3 p-3 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                       {content.mediaType === 'video' ? (
@@ -385,7 +400,14 @@ const DashboardContent = ({ publishedContents, draftContents, contents }: any) =
 };
 
 // Contents Management Component
-const ContentsManagement = ({ publishedContents, draftContents, onEdit, onDelete, onToggleStatus, onAddNew }: any) => {
+const ContentsManagement = ({ publishedContents, draftContents, onEdit, onDelete, onToggleStatus, onAddNew }: {
+  publishedContents: Content[];
+  draftContents: Content[];
+  onEdit: (content: Content) => void;
+  onDelete: (id: number) => void;
+  onToggleStatus: (id: number) => void;
+  onAddNew: () => void;
+}) => {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
@@ -412,7 +434,7 @@ const ContentsManagement = ({ publishedContents, draftContents, onEdit, onDelete
           </Card>
         ) : (
           <div className="grid gap-4">
-            {publishedContents.map((content: any) => (
+            {publishedContents.map((content: Content) => (
               <ContentCard 
                 key={content.id} 
                 content={content} 
@@ -442,7 +464,7 @@ const ContentsManagement = ({ publishedContents, draftContents, onEdit, onDelete
           </Card>
         ) : (
           <div className="grid gap-4">
-            {draftContents.map((content: any) => (
+            {draftContents.map((content: Content) => (
               <ContentCard 
                 key={content.id} 
                 content={content} 
@@ -460,7 +482,7 @@ const ContentsManagement = ({ publishedContents, draftContents, onEdit, onDelete
 };
 
 // Coming Soon Component
-const ComingSoon = ({ menu }: any) => {
+const ComingSoon = ({ menu }: { menu: string }) => {
   return (
     <div className="flex items-center justify-center h-64">
       <div className="text-center">
@@ -476,7 +498,13 @@ const ComingSoon = ({ menu }: any) => {
 };
 
 // Content Card Component
-const ContentCard = ({ content, onEdit, onDelete, onToggleStatus, isPublished }: any) => {
+const ContentCard = ({ content, onEdit, onDelete, onToggleStatus, isPublished }: {
+  content: Content;
+  onEdit: (content: Content) => void;
+  onDelete: (id: number) => void;
+  onToggleStatus: (id: number) => void;
+  isPublished: boolean;
+}) => {
   return (
     <Card>
       <CardContent className="p-6">
@@ -510,21 +538,21 @@ const ContentCard = ({ content, onEdit, onDelete, onToggleStatus, isPublished }:
             <Button
               variant="outline"
               size="sm"
-              onClick={onToggleStatus}
+              onClick={() => onToggleStatus(content.id)}
             >
               {isPublished ? <EyeOff className="h-4 w-4" /> : <Globe className="h-4 w-4" />}
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={onEdit}
+              onClick={() => onEdit(content)}
             >
               <Edit className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={onDelete}
+              onClick={() => onDelete(content.id)}
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -536,7 +564,11 @@ const ContentCard = ({ content, onEdit, onDelete, onToggleStatus, isPublished }:
 };
 
 // Content Form Component
-const ContentForm = ({ content, onSubmit, onCancel }: any) => {
+const ContentForm = ({ content, onSubmit, onCancel }: {
+  content: Content | null;
+  onSubmit: (data: Content) => void;
+  onCancel: () => void;
+}) => {
   const [formData, setFormData] = useState({
     title: content?.title || "",
     content: content?.content || "",
@@ -549,13 +581,11 @@ const ContentForm = ({ content, onSubmit, onCancel }: any) => {
     status: content?.status || "draft"
   });
 
-  const [mediaFile, setMediaFile] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState(content?.mediaUrl || "");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setMediaFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         setMediaPreview(e.target?.result as string);
@@ -567,9 +597,13 @@ const ContentForm = ({ content, onSubmit, onCancel }: any) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({
+      id: content?.id || Date.now(),
+      date: content?.date || new Date().toISOString().split('T')[0],
+      views: content?.views || 0,
+      likes: content?.likes || 0,
       ...formData,
       mediaUrl: mediaPreview,
-      tags: formData.tags.split(",").map((tag: string) => tag.trim()).filter(Boolean)
+      tags: formData.tags.split(",").map((tag: string) => tag.trim()).filter(Boolean),
     });
   };
 
@@ -684,9 +718,11 @@ const ContentForm = ({ content, onSubmit, onCancel }: any) => {
                     className="max-w-xs rounded-lg"
                   />
                 ) : (
-                  <img 
+                  <Image 
                     src={mediaPreview} 
                     alt="Preview" 
+                    width={100}
+                    height={100}
                     className="max-w-xs rounded-lg"
                   />
                 )}

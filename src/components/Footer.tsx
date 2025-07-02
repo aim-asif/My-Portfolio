@@ -1,42 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Mail, Github, Linkedin, Twitter, Instagram, Youtube, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
-
-  const footerLinks = {
-    services: [
-      { name: "Product Design", href: "/services#product-design" },
-      { name: "UI/UX Design", href: "/services#ui-ux" },
-      { name: "Brand Identity", href: "/services#branding" },
-      { name: "Video Editing", href: "/services#video-editing" },
-      { name: "Content Writing", href: "/services#content-writing" },
-    ],
-    company: [
-      { name: "About", href: "/about" },
-      { name: "Portfolio", href: "/portfolio" },
-      { name: "Blog", href: "/blog" },
-      { name: "Contact", href: "/contact" },
-      { name: "Resume", href: "/resume.pdf" },
-    ],
-    resources: [
-      { name: "Design Tips", href: "/blog/category/design-tips" },
-      { name: "Case Studies", href: "/blog/category/case-studies" },
-      { name: "Tutorials", href: "/blog/category/tutorials" },
-      { name: "Free Resources", href: "/resources" },
-      { name: "FAQ", href: "/faq" },
-    ],
-  };
-
-  const socialLinks = [
-    { name: "GitHub", href: "https://github.com", icon: Github },
-    { name: "LinkedIn", href: "https://linkedin.com", icon: Linkedin },
-    { name: "Twitter", href: "https://twitter.com", icon: Twitter },
-    { name: "Instagram", href: "https://instagram.com", icon: Instagram },
-    { name: "YouTube", href: "https://youtube.com", icon: Youtube },
-  ];
-
   return (
     <footer className="bg-neutral-900 dark:bg-neutral-950 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

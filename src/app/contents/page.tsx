@@ -16,6 +16,23 @@ import {
   Building2,
   ChevronDown
 } from "lucide-react";
+import Image from "next/image";
+
+type Content = {
+  id: number;
+  title: string;
+  content: string;
+  company: string;
+  client: string;
+  category: string;
+  mediaType: string;
+  mediaUrl: string;
+  tags: string[];
+  status: string;
+  date: string;
+  views: number;
+  likes: number;
+};
 
 const ContentsPage = () => {
   const router = useRouter();
@@ -23,7 +40,7 @@ const ContentsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedCompany, setSelectedCompany] = useState("all");
   const [visibleItems, setVisibleItems] = useState(6);
-  const [contents, setContents] = useState([]);
+  const [contents, setContents] = useState<Content[]>([]);
 
   const categories = [
     { id: "all", name: "All Categories" },
@@ -48,13 +65,13 @@ const ContentsPage = () => {
   useEffect(() => {
     const savedContents = localStorage.getItem("dashboardContents");
     if (savedContents) {
-      const allContents = JSON.parse(savedContents);
-      const publishedContents = allContents.filter((content: any) => content.status === 'published');
+      const allContents: Content[] = JSON.parse(savedContents);
+      const publishedContents = allContents.filter((content: Content) => content.status === 'published');
       setContents(publishedContents);
     }
   }, []);
 
-  const filteredContents = contents.filter((content: any) => {
+  const filteredContents = contents.filter((content: Content) => {
     const matchesSearch = content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          content.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          content.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -148,7 +165,7 @@ const ContentsPage = () => {
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-          {displayedContents.map((content: any) => (
+          {displayedContents.map((content: Content) => (
             <Card 
               key={content.id} 
               className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group"
@@ -164,10 +181,12 @@ const ContentsPage = () => {
                       muted
                     />
                   ) : (
-                    <img 
-                      src={content.mediaUrl} 
+                    <Image 
+                      src={content.mediaUrl || ""} 
                       alt={content.title}
                       className="w-full h-full object-cover"
+                      fill
+                      style={{ objectFit: "cover" }}
                     />
                   )
                 ) : (

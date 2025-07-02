@@ -12,7 +12,7 @@ const CTASection = () => {
             Ready to Start Your Project?
           </h2>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-            Let's work together to bring your ideas to life. I'm here to help you create 
+            Let&apos;s work together to bring your ideas to life. I&apos;m here to help you create 
             something amazing that will make a lasting impact.
           </p>
         </div>
@@ -27,7 +27,7 @@ const CTASection = () => {
               </div>
               <h3 className="text-xl font-bold text-white mb-4">Get In Touch</h3>
               <p className="text-blue-100 mb-6">
-                Have a project in mind? Let's discuss how I can help bring your vision to reality.
+                Have a project in mind? Let&apos;s discuss how I can help bring your vision to reality.
               </p>
               <Button asChild size="lg" className="w-full bg-white text-blue-600 hover:bg-blue-50">
                 <Link href="/contact">

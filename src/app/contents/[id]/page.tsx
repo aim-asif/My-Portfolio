@@ -16,18 +16,35 @@ import {
   Share2,
   Tag
 } from "lucide-react";
+import Image from "next/image";
+
+type Content = {
+  id: number;
+  title: string;
+  content: string;
+  company: string;
+  client: string;
+  category: string;
+  mediaType: string;
+  mediaUrl: string;
+  tags: string[];
+  status: string;
+  date: string;
+  views: number;
+  likes: number;
+};
 
 const ContentDetailPage = () => {
   const params = useParams();
   const router = useRouter();
-  const [content, setContent] = useState(null);
+  const [content, setContent] = useState<Content | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const savedContents = localStorage.getItem("dashboardContents");
     if (savedContents) {
       const contents = JSON.parse(savedContents);
-      const foundContent = contents.find((c: any) => c.id === parseInt(params.id as string));
+      const foundContent = contents.find((c: Content) => c.id === parseInt(params.id as string));
       
       // Only show published content
       if (foundContent && foundContent.status === 'published') {
@@ -107,10 +124,12 @@ const ContentDetailPage = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <img 
-                        src={content.mediaUrl} 
+                      <Image 
+                        src={content.mediaUrl || ""} 
                         alt={content.title}
                         className="w-full h-full object-cover"
+                        fill
+                        style={{ objectFit: "cover" }}
                       />
                     )
                   ) : (
